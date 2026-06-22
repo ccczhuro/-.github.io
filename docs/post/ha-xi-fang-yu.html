@@ -10,15 +10,13 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="对抗性训练：
-核心是让模型在 “干净 + 对抗样本” 上学习，以适应带扰动的输入。">
-<meta property="og:title" content="综述笔记">
-<meta property="og:description" content="对抗性训练：
-核心是让模型在 “干净 + 对抗样本” 上学习，以适应带扰动的输入。">
+<meta name="description" content="1### 一、文章核心定位**FPAD: Fuzzy-Prototype-Guided Adversarial Attack and Defense for Deep Cross-Modal Hashing** 是一篇针对**深度跨模态哈希（Deep Cross-Modal Hashing）**的**对抗攻击与防御**研究，提出了一套名为 **FPAD** 的完整框架，用于提升跨模态哈希模型的对抗鲁棒性。">
+<meta property="og:title" content="哈希防御">
+<meta property="og:description" content="1### 一、文章核心定位**FPAD: Fuzzy-Prototype-Guided Adversarial Attack and Defense for Deep Cross-Modal Hashing** 是一篇针对**深度跨模态哈希（Deep Cross-Modal Hashing）**的**对抗攻击与防御**研究，提出了一套名为 **FPAD** 的完整框架，用于提升跨模态哈希模型的对抗鲁棒性。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://ccczhuro.github.io/-.github.io/post/zong-shu-bi-ji.html">
+<meta property="og:url" content="https://ccczhuro.github.io/-.github.io/post/ha-xi-fang-yu.html">
 <meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
-<title>综述笔记</title>
+<title>哈希防御</title>
 
 
 
@@ -51,7 +49,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 
 <body>
     <div id="header">
-<h1 class="postTitle">综述笔记</h1>
+<h1 class="postTitle">哈希防御</h1>
 <div class="title-right">
     <a href="https://ccczhuro.github.io/-.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
         <svg class="octicon" width="16" height="16">
@@ -59,7 +57,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         </svg>
     </a>
     
-    <a href="https://github.com/ccczhuro/-.github.io/issues/1" target="_blank" class="btn btn-invisible circle" title="Issue">
+    <a href="https://github.com/ccczhuro/-.github.io/issues/3" target="_blank" class="btn btn-invisible circle" title="Issue">
         <svg class="octicon" width="16" height="16">
             <path id="pathIssue" fill-rule="evenodd"></path>
         </svg>
@@ -75,29 +73,34 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<div class="markdown-body" id="postBody"><p>对抗性训练：<br>
-核心是让模型在 “干净 + 对抗样本” 上学习，以适应带扰动的输入。从研究进展看：<br>
-方法演进：从 “基础混合训练” 发展到 “层级优化、成本优化、样本精细化筛选” 等复杂策略，兼顾 “鲁棒性” 与 “计算效率”“准确率平衡”。<br>
-场景覆盖：适配 “有标注 / 无标注数据”“物理可实现攻击 / 黑盒攻击” 等多类场景，满足不同应用需求。<br>
-未来趋势：更聚焦 “高效、精准、泛化性强” 的训练策略，平衡 “鲁棒性提升” 与 “训练成本、纯净样本准确率” 的权衡，同时结合细粒度样本分析（如难样本、友好样本）优化防御效果。</p>
-<p>修改训练流程：<br>
-防御性蒸馏（DD）采用知识蒸馏技术训练具有鲁棒性的网络，其核心思路是用已训练网络的标签替换原始标签<br>
-强化自训练（RST）采用标准监督学习方法获取伪标签，并将其输入另一个以对抗鲁棒性为目标的网络，通过未标注数据弥合标准准确率与鲁棒准确率之间的差距。<br>
-防御训练的核心逻辑是通过 “调整训练流程、引入正则化 / 数据增强、优化神经元行为、利用特殊网络结构（如神经 ODE）” 等手段，提升模型对对抗攻击的鲁棒性。这类方法需反复迭代训练，虽能有效增强鲁棒性，但在已有运行模型中实施需额外工程成本。</p>
-<p>使用补充网络：<br>
-在 “输入→分类” 流程中插入检测器，提前识别并拦截对抗样本<br>
-核心是主动净化输入，移除对抗性噪声：高级表征引导去噪器（HGD）生成式对抗网络（GAN）辅助<br>
-变种网络防御核心是改造网络结构，使其天生鲁棒<br>
-补充网络的核心逻辑是在 “输入到分类器” 流程中插入 “干预环节”：或提前检测拦截对抗样本，或主动净化噪声，或改造网络结构天生抗扰。优势是可 “外挂式” 部署（无需修改分类器），但需平衡检测准确性与计算开销。</p>
-<p>变更网络架构：<br>
-变种网络的核心逻辑是从 “网络结构、基础组件、前端变换” 层面改造模型，实现 “天生抗扰”。优势是能从根源提升鲁棒性，但部分方法需修改原始架构，导致生产环境落地困难，且部分技术仍存在防御漏洞，需进一步优化。</p>
-<p>执行网络验证：<br>
-网络验证的价值在于从 “实验（压缩、训练技巧）” 和 “理论（形式化验证、测试框架）” 两个维度，全面评估并保障模型鲁棒性，是 “鲁棒模型从训练到实际落地” 的关键衔接环节，但该领域仍面临 “实现细节复杂、部分技术落地难度大” 等挑战，有待进一步突破。</p>
-<p>TP（真阳性）：模型正确预测为正类的样本数量；<br>
-TN（真阴性）：模型正确预测为负类的样本数量；<br>
-FP（假阳性）：模型错误地将负类预测为正类的样本数量；<br>
-FN（假阴性）：模型错误地将正类预测为负类的样本数量。</p>
-<p>欺骗率FR是对抗攻击成功翻转标签的比例，反映了 “对抗攻击能让模型对图像标签判断出错的成功率”，从而衡量对抗攻击的有效性。</p></div>
+<div class="markdown-body" id="postBody"><p>1### 一、文章核心定位<strong>FPAD: Fuzzy-Prototype-Guided Adversarial Attack and Defense for Deep Cross-Modal Hashing</strong> 是一篇针对<strong>深度跨模态哈希（Deep Cross-Modal Hashing）的对抗攻击与防御</strong>研究，提出了一套名为 <strong>FPAD</strong> 的完整框架，用于提升跨模态哈希模型的对抗鲁棒性。.<br>
+2.<br>
+3.  <strong>跨模态哈希的本质</strong>：    跨模态检索的核心目标是用一种模态的数据（如图像）检索另一种模态的语义相关数据（如文本描述），深度跨模态哈希因<strong>特征提取能力强、存储成本低、检索速度快</strong>而被广泛应用。2.  <strong>安全隐患</strong>：<br>
+深度跨模态哈希模型继承了深度神经网络的脆弱性，极易受到<strong>对抗样本攻击</strong>：精心设计的微小扰动会让模型返回无关结果，对信息检索、医疗诊断、广告推荐等场景造成严重安全威胁。<br>
+3.  <strong>现有方案的缺陷</strong>：<br>
+- 现有对抗攻击/防御策略在哈希编码与目标语义表示之间存在<strong>弱关联</strong>，无法有效针对跨模态哈希的特性；<br>
+- 同时兼顾<strong>攻击能力</strong>与<strong>防御能力</strong>的工作非常稀缺，缺乏针对深度跨模态哈希的完整攻防框架。<br>
+FPAD 框架由<strong>攻击模块</strong>与<strong>防御模块</strong>协同组成，核心创新点如下：</p>
+<h4>1. 自适应模糊原型学习网络（FpNet）</h4>
+<ul>
+<li>设计了自适应模糊原型学习网络（FpNet），高效提取一组<strong>模糊原型（fuzzy-prototypes）</strong>；</li>
+<li>目标：在<strong>特征空间</strong>和<strong>汉明空间</strong>中，同时编码异构模态的底层语义结构，为后续生成高质量对抗样本提供基础。</li>
+</ul>
+<h4>2. 启发式哈希码扰动 + 模糊原型整流</h4>
+<ul>
+<li><strong>启发式扰动</strong>：对衍生的原型哈希码进行启发式扰动，生成<strong>高质量对抗样本</strong>；</li>
+<li><strong>原型整流</strong>：提出模糊原型整流（fuzzy-prototype rectification）方案，在生成对抗样本的同时，保持对抗样本与干净样本的语义一致性，避免破坏原始语义信息。</li>
+</ul>
+<h4>3. 协同对抗训练框架</h4>
+<ul>
+<li>将对抗样本与原始训练样本混合，作为<strong>增强输入</strong>；</li>
+<li>提出<strong>模糊原型引导的对抗学习框架</strong>，协同执行<strong>对抗训练</strong>，最终生成<strong>鲁棒的跨模态哈希码</strong>，同时具备：
+<ul>
+<li>强对抗攻击能力：能生成高质量对抗样本，有效攻击跨模态哈希模型；</li>
+<li>高对抗防御能力：在对抗训练后，模型能抵御各类攻击，同时保持跨模态检索性能。</li>
+</ul>
+</li>
+</ul></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
